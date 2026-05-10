@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
+import { asset } from "@/lib/paths";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -38,7 +39,7 @@ export default function Navbar() {
         <a href="#home" className="flex items-center gap-3" aria-label="KVMTCC home">
           <div className="relative flex h-12 w-auto items-center rounded-lg bg-white/95 px-2 py-1 shadow-sm ring-1 ring-gold-400/20 backdrop-blur-sm transition-all duration-300 hover:ring-gold-400/50 dark:bg-cream-50/95">
             <Image
-              src="/logo.png"
+              src={asset("/logo.png")}
               alt="KVM Creating Successful Minds"
               width={140}
               height={40}

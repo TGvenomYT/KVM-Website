@@ -16,6 +16,9 @@ const nextConfig = {
   basePath,
   assetPrefix: basePath ? `${basePath}/` : "",
   outputFileTracingRoot: __dirname,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

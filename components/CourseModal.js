@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
-import { X, Calendar, Users, Clock, Sparkles, ArrowRight } from "lucide-react";
+import { X, Users, Clock, Sparkles, ArrowRight } from "lucide-react";
 
 const STAGGER = {
   hidden: { opacity: 0 },
@@ -48,7 +48,6 @@ export default function CourseModal({ course, onClose }) {
             className="relative w-full max-w-6xl overflow-hidden rounded-[2rem] border border-gold-400/25 bg-cream-50 shadow-2xl shadow-navy-950/20 dark:border-gold-400/15 dark:bg-navy-900"
           >
             <CourseHero course={course} onClose={onClose} />
-            <CourseTimetable batches={course.batches} timetable={course.timetable} />
             <CourseFaculty staff={course.staff} />
             <CourseCta onClose={onClose} />
           </motion.div>
@@ -137,105 +136,6 @@ function HeroChip({ icon: Icon, label }) {
       <Icon className="h-3.5 w-3.5 text-gold-500 dark:text-gold-400" />
       {label}
     </span>
-  );
-}
-
-function CourseTimetable({ batches, timetable }) {
-  const [activeBatch, setActiveBatch] = useState(0);
-
-  const list = batches?.length ? batches : timetable?.length ? [{ name: "Regular Batch", timetable }] : [];
-  if (!list.length) return null;
-
-  const showTabs = list.length > 1;
-  const current = list[Math.min(activeBatch, list.length - 1)];
-
-  return (
-    <section className="relative px-6 py-12 md:px-12 md:py-14">
-      <SectionHeader
-        eyebrow="Weekly Rhythm"
-        title="The Schedule"
-        subtitle={
-          showTabs
-            ? `${list.length} batches available — select one to view its schedule`
-            : "Indicative timings — final slots confirmed at enrolment"
-        }
-        icon={Calendar}
-      />
-
-      {showTabs && (
-        <div className="mt-7 flex flex-wrap gap-2">
-          {list.map((b, i) => {
-            const isActive = i === activeBatch;
-            return (
-              <button
-                key={b.name + i}
-                onClick={() => setActiveBatch(i)}
-                className={`relative rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${
-                  isActive
-                    ? "bg-gold-gradient text-navy-950 shadow-lg shadow-gold-400/30"
-                    : "border border-gold-400/30 bg-white/55 text-gold-700 hover:border-gold-400/55 hover:bg-gold-400/10 dark:border-gold-400/20 dark:bg-navy-800/40 dark:text-gold-300 dark:hover:border-gold-400/45"
-                }`}
-              >
-                {b.name}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeBatch}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-8 space-y-5"
-        >
-          {current.timetable.map((day, dayIdx) => (
-            <motion.div
-              key={day.day}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45, delay: dayIdx * 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className="group flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-6"
-            >
-              <div className="flex flex-row items-center gap-3 sm:w-28 sm:flex-col sm:items-end sm:gap-1 sm:pt-2 sm:text-right">
-                <div className="font-display text-2xl font-bold tracking-tight text-navy-950 transition-colors duration-300 group-hover:text-gold-600 dark:text-white dark:group-hover:text-gold-300 md:text-3xl">
-                  {day.day.slice(0, 3).toUpperCase()}
-                </div>
-                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-600 dark:text-gold-400">
-                  {day.slots.length} {day.slots.length === 1 ? "class" : "classes"}
-                </div>
-              </div>
-
-              <div className="hidden w-px bg-gradient-to-b from-transparent via-gold-400/40 to-transparent sm:block" />
-
-              <div className="flex flex-1 flex-wrap gap-3">
-                {day.slots.map((slot, i) => (
-                  <div
-                    key={i}
-                    className="group/slot relative flex-1 overflow-hidden rounded-2xl border border-gold-400/20 bg-gradient-to-br from-white to-cream-100/70 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-400/50 hover:shadow-lg dark:border-gold-400/12 dark:from-navy-800/60 dark:to-navy-900/80 dark:hover:border-gold-400/30"
-                    style={{ minWidth: "180px" }}
-                  >
-                    <div className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-gold-400/15 opacity-0 blur-2xl transition-opacity duration-500 group-hover/slot:opacity-100" />
-                    <div className="relative">
-                      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-600 dark:text-gold-400">
-                        <Clock className="h-3 w-3" />
-                        {slot.time}
-                      </div>
-                      <div className="mt-2 font-display text-base font-bold leading-tight text-navy-950 dark:text-white">
-                        {slot.subject}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
-    </section>
   );
 }
 

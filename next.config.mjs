@@ -1,12 +1,20 @@
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const repoSegment = process.env.GITHUB_REPOSITORY?.split("/")[1];
+const hasCustomDomain = fs.existsSync(path.join(__dirname, "public", "CNAME"));
+const useBasePath = !!(process.env.GITHUB_ACTIONS && repoSegment && !hasCustomDomain);
+const basePath = useBasePath ? `/${repoSegment}` : "";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
   trailingSlash: true,
+  basePath,
+  assetPrefix: basePath ? `${basePath}/` : "",
   outputFileTracingRoot: __dirname,
   images: {
     unoptimized: true,

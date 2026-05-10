@@ -6,7 +6,7 @@ Premium educational website for KVMTCC Tuition Centre. Static-export Next.js sit
 
 ## What this project is
 
-A high-end marketing site for a tuition centre serving Class 8–12 students across CBSE and State Board curricula. The site is fully static and free to host, but content (toppers, faculty, courses, testimonials, stats, timetables) lives in a Google Sheet that any non-technical admin can edit without touching code.
+A high-end marketing site for a tuition centre serving Class 8–12 students across CBSE and State Board curricula. The site is fully static and free to host, but content (toppers, faculty, courses, testimonials, stats, contact details) lives in a Google Sheet that any non-technical admin can edit without touching code.
 
 When the admin updates the sheet, the website fetches the new data on the next page load — no rebuild required.
 
@@ -34,7 +34,7 @@ When the admin updates the sheet, the website fetches the new data on the next p
 - **Dynamic mouse-reactive background** with cursor-following spotlight + parallax orbs
 - **Bento-grid Hall of Fame** with admin-controllable card sizes (`featured`, `wide`, `tall`, `big`, square)
 - **Animated stats bar** with count-up numbers
-- **Course catalogue with modal** showing weekly timetable + assigned faculty
+- **Course catalogue with modal** showing assigned faculty + subject pills
 - **Glassmorphic testimonial carousel** with auto-advance
 - **Faculty section** with hover glow on circular avatars
 - **Reveal-on-scroll** animations across every section
@@ -61,7 +61,7 @@ kvm website final/
 │   ├── StatsBar.js
 │   ├── HallOfFame.js
 │   ├── Courses.js
-│   ├── CourseModal.js          # Per-course timetable + staff modal
+│   ├── CourseModal.js          # Per-course faculty + subject details modal
 │   ├── Faculty.js
 │   ├── Testimonials.js
 │   ├── Footer.js
@@ -118,26 +118,39 @@ Content is managed in a Google Sheet, NOT in code. The sheet has 7 tabs:
 | `Faculty` | Teacher profiles |
 | `Courses` | Course catalogue |
 | `CourseFaculty` | Which faculty teach which subjects per course |
-| `Timetable` | Weekly schedule per course |
 | `Testimonials` | Parent testimonials |
 | `Stats` | Animated counter values (Years, Students, etc.) |
+| `Contact` | Phone, email, address, social links shown in the footer |
 
 The sheet ID is hardcoded in `lib/sheets.js`. To use a different sheet, replace `SHEET_ID`.
 
 For the admin who edits this content, point them to **`ADMIN_GUIDE.md`**.
 
-### How fetching works
+### How fetching works (and why static export still allows live updates)
 
-`lib/sheets.js` fetches each tab as CSV via Google's gviz endpoint:
-```
-https://docs.google.com/spreadsheets/d/<SHEET_ID>/gviz/tq?tqx=out:csv&sheet=<TabName>
-```
+The site uses Next.js `output: "export"` — the build produces plain static HTML/CSS/JS. **No server runs at request time.** That would normally mean content is frozen at build time, BUT the data fetching here is deliberately client-side:
 
-The sheet must be shared as **"Anyone with the link → Viewer"**. No API key, no auth.
+- `lib/sheets.js` is marked `"use client"` and exported helpers run in the browser.
+- Every data-displaying component (`HallOfFame`, `Faculty`, `Courses`, `Testimonials`, `StatsBar`, `Footer`) is a `"use client"` component that fires `getXxx()` from a `useEffect` on mount.
+- `fetchTab()` uses `fetch(url, { cache: "no-store" })`, which bypasses both Next.js's fetch cache and any HTTP cache layer.
+- The endpoint is Google's gviz CSV export:
+  ```
+  https://docs.google.com/spreadsheets/d/<SHEET_ID>/gviz/tq?tqx=out:csv&sheet=<TabName>
+  ```
+  The sheet must be shared as **"Anyone with the link → Viewer"**. No API key, no auth.
 
-PapaParse turns the CSV into row objects keyed by column header. Helper functions like `getToppers()`, `getCourses()` then transform rows into the shapes components expect, including joining `Courses` with `CourseFaculty`, `Timetable`, and `Faculty`.
+So the runtime flow is: **static HTML loads → JS hydrates → `useEffect` fetches CSV from Google → PapaParse → component renders with live data.** Every page load gets fresh sheet content (~30s after the admin saves, accounting for Google's CDN propagation).
 
-Results are cached in memory for the page lifetime to avoid redundant fetches across components.
+A small in-memory `Map` in `fetchTab()` deduplicates calls within a single page session — e.g., when multiple components ask for `getCourses()` it only hits Google once per page lifetime. That cache is wiped on every full page reload because the module re-initializes.
+
+**Trade-offs of this approach:**
+- ✅ Static export = free GitHub Pages hosting, fast CDN delivery, no server costs
+- ✅ Live content updates without rebuilding
+- ✅ No API keys or auth complexity
+- ⚠️ Initial page load shows skeleton/loading states for ~200–500ms while the fetch completes
+- ⚠️ Sheet must remain publicly readable (which is fine for a marketing site — the data shows up on the site anyway)
+
+If you ever wanted **build-time** data baking instead (faster initial paint, requires a rebuild trigger when the sheet changes), you'd convert the components to Server Components, call the fetcher directly in them, and add a Sanity-style webhook from the sheet to trigger GitHub Actions. Not needed for current scale.
 
 ---
 
@@ -235,7 +248,19 @@ Run `npm install`.
 The sheet tab name doesn't exactly match what the code expects (case-sensitive, no leading/trailing spaces). Check tab names: `Toppers`, `Faculty`, `Courses`, `CourseFaculty`, `Timetable`, `Testimonials`, `Stats`.
 
 ### Sheet changes don't show up on the website
-Hard-refresh the browser (`Cmd+Shift+R`). The in-memory cache resets on each fresh page load.
+
+The site fetches sheet data client-side on every page load — no rebuild needed. If a recent edit isn't visible:
+
+1. **Hard-refresh** (`Cmd+Shift+R` / `Ctrl+Shift+R`) — wipes the page's in-memory `fetchTab` cache and re-runs the gviz fetch.
+2. **Wait 30–60 seconds** — Google's CDN can take a moment to propagate sheet edits to the CSV endpoint.
+3. **Test the endpoint directly** — open in incognito:
+   ```
+   https://docs.google.com/spreadsheets/d/<SHEET_ID>/gviz/tq?tqx=out:csv&sheet=<TabName>
+   ```
+   If the CSV reflects your edit, the sheet side is fine. If not, the gviz cache hasn't refreshed yet — wait another minute.
+4. **Check tab name spelling** (case-sensitive, no leading/trailing spaces). Google falls back to the first tab when a name doesn't match, which silently produces wrong data shape.
+
+Note: this is **not** a `next build` problem. The Next.js static export bakes only HTML shells; the actual sheet data loads in the browser on every visit, so no rebuild is ever required for content updates. Rebuilds (via `git push` → GitHub Actions) are only needed for code/UI changes.
 
 ### `npm audit` shows vulnerabilities
 **Do not run `npm audit fix --force`.** It will downgrade Next.js to a 6-year-old version. Most reported vulns are transitive dependencies in `next` itself and are non-exploitable for a static site.

@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #FAF8F2;
+  --color-surface: #FFFFFF;
+  --color-text: #0A1029;
+  --color-text-muted: #4D5C8A;
+  --color-border: rgba(10, 16, 41, 0.08);
+  --grid-line: rgba(10, 16, 41, 0.05);
+  --color-gold: #B8941F;
+}
+
+.dark {
+  --color-bg: #02040F;
+  --color-surface: #0A1029;
+  --color-text: #F8FAFC;
+  --color-text-muted: rgba(248, 250, 252, 0.6);
+  --color-border: rgba(212, 175, 55, 0.12);
+  --grid-line: rgba(212, 175, 55, 0.06);
+  --color-gold: #D4AF37;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  scroll-behavior: smooth;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background-color: rgba(212, 175, 55, 0.4);
+  color: #02040F;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF37 0%, #967814 100%);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(184, 148, 31, 0.2);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+  .dark .glass {
+    background: rgba(17, 26, 58, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1px solid rgba(184, 148, 31, 0.22);
+    box-shadow: 0 10px 40px -10px rgba(10, 16, 41, 0.12);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .dark .glass-strong {
+    background: rgba(10, 16, 41, 0.75);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #B8941F 0%, #D4AF37 50%, #735B0F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .dark .text-gold-gradient {
+    background: linear-gradient(135deg, #F6E9B8 0%, #D4AF37 50%, #967814 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #B8941F 0%,
+      #D4AF37 25%,
+      #B8941F 50%,
+      #D4AF37 75%,
+      #B8941F 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+  .dark .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #D4AF37 0%,
+      #FBF5E1 25%,
+      #D4AF37 50%,
+      #FBF5E1 75%,
+      #D4AF37 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold tracking-wide text-navy-950 transition-all duration-300;
+    background: linear-gradient(135deg, #F6E9B8 0%, #D4AF37 50%, #967814 100%);
+    box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.5);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -10px rgba(212, 175, 55, 0.7);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border px-7 py-3.5 text-sm font-semibold tracking-wide transition-all duration-300;
+    border-color: rgba(184, 148, 31, 0.4);
+    color: #735B0F;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(184, 148, 31, 0.7);
+    background: rgba(212, 175, 55, 0.08);
+  }
+  .dark .btn-ghost {
+    border-color: rgba(212, 175, 55, 0.3);
+    color: #F6E9B8;
+  }
+  .dark .btn-ghost:hover {
+    border-color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.05);
+  }
+
+  .section-pad {
+    @apply px-5 py-16 sm:px-6 sm:py-24 md:px-12 lg:px-20 lg:py-32;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(184, 148, 31, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 248, 242, 1) 100%);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .bento-card {
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  background: linear-gradient(180deg, rgba(17, 26, 58, 0.7) 0%, rgba(10, 16, 41, 0.9) 100%);
+}
+.bento-card:hover {
+  border-color: rgba(184, 148, 31, 0.65);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 25px 60px -20px rgba(184, 148, 31, 0.35);
+}
+.dark .bento-card:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 25px 60px -20px rgba(212, 175, 55, 0.3);
+}

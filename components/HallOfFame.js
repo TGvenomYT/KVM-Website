@@ -1,0 +1,128 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Trophy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getToppers } from "@/lib/sheets";
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 40, scale: 0.96 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+export default function HallOfFame() {
+  const [toppers, setToppers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getToppers()
+      .then(setToppers)
+      .catch((e) => console.error("Toppers fetch failed:", e))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <section id="hall-of-fame" className="relative section-pad">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="mb-14 max-w-3xl"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-4 py-1.5 dark:border-gold-400/20 dark:bg-gold-400/5">
+            <Trophy className="h-3.5 w-3.5 text-gold-500 dark:text-gold-400" />
+            <span className="text-xs font-medium uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
+              Hall of Fame
+            </span>
+          </div>
+          <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
+            Our <span className="text-gold-gradient">Board Exam</span> Legends
+          </h2>
+          <p className="mt-5 text-lg leading-relaxed text-navy-700/80 dark:text-white/60">
+            Each one a story of grit, mentorship, and meticulous preparation.
+            Meet the students who turned their ambition into accolades.
+          </p>
+        </motion.div>
+
+        <div className="grid auto-rows-[minmax(220px,_auto)] grid-cols-1 gap-5 md:auto-rows-[minmax(160px,_auto)] md:grid-cols-4">
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`bento-card animate-pulse bg-gold-400/5 ${
+                    i === 0 ? "row-span-2 md:col-span-2 md:row-span-2" : ""
+                  } ${i === 1 || i === 4 ? "md:col-span-2" : ""}`}
+                />
+              ))
+            : toppers.map((topper, i) => {
+                const Icon = topper.icon;
+                return (
+                  <motion.div
+                    key={`topper-${i}-${topper.name || ""}`}
+                    custom={i}
+                    variants={cardVariant}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-50px" }}
+                    className={`bento-card group ${topper.span}`}
+                  >
+                    <div className="relative h-full w-full overflow-hidden rounded-[1.5rem]">
+                      {topper.img && (
+                        <Image
+                          src={topper.img}
+                          alt={topper.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-105"
+                          unoptimized
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-navy-950/10" />
+
+                      <div className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gold-gradient shadow-lg shadow-gold-400/30">
+                        <Icon className="h-5 w-5 text-navy-950" strokeWidth={2.4} />
+                      </div>
+
+                      {topper.featured && (
+                        <div className="absolute right-5 top-5 z-10 rounded-full border border-gold-400/40 bg-navy-950/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-300 backdrop-blur">
+                          Hall of Famer
+                        </div>
+                      )}
+
+                      <div className="absolute inset-x-5 bottom-5 z-10">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-300">
+                          {topper.grade}
+                        </div>
+                        <h3
+                          className={`mt-1 font-display font-bold text-white ${
+                            topper.featured ? "text-3xl md:text-4xl" : "text-xl md:text-2xl"
+                          }`}
+                        >
+                          {topper.name}
+                        </h3>
+                        <div className="mt-2 flex items-end justify-between gap-3">
+                          <p className="text-sm text-white/60">{topper.subject}</p>
+                          <div className="text-right">
+                            <div className="font-display text-2xl font-bold text-gold-gradient md:text-3xl">
+                              {topper.marks}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+        </div>
+      </div>
+    </section>
+  );
+}

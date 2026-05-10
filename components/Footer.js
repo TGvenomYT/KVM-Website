@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, Linkedin, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { asset } from "@/lib/paths";
 
 const links = {
   Programmes: ["Class 12 CBSE", "Class 11 CBSE", "Class 10", "Class 9", "Class 8", "State Board"],
@@ -49,7 +50,7 @@ export default function Footer() {
             <a href="#home" className="inline-flex items-center gap-3" aria-label="KVMTCC home">
               <div className="relative flex items-center rounded-lg bg-white/95 px-2.5 py-1.5 ring-1 ring-gold-400/25 dark:bg-cream-50/95">
                 <Image
-                  src="/logo.png"
+                  src={asset("/logo.png")}
                   alt="KVM Creating Successful Minds"
                   width={160}
                   height={48}

@@ -4,7 +4,7 @@ This guide is for the non-technical person who manages content on the KVMTCC web
 
 ---
 
-## How it works (in 30 seconds)
+## How it works  (in 30 seconds)
 
 1. You edit a Google Sheet
 2. Google saves automatically

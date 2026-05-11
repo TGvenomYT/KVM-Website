@@ -36,9 +36,10 @@ export default function CourseModal({ course, onClose }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-navy-950/70 px-4 py-8 backdrop-blur-md md:items-center md:py-12"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-navy-950/70 backdrop-blur-md"
           onClick={onClose}
         >
+          <div className="flex min-h-full items-start justify-center px-4 py-8 md:items-center md:py-12">
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -51,6 +52,7 @@ export default function CourseModal({ course, onClose }) {
             <CourseFaculty staff={course.staff} />
             <CourseCta onClose={onClose} />
           </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

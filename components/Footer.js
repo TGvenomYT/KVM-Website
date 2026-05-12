@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Youtube, Linkedin, ArrowRight } from "lucide-react";
+import MagneticButton from "./MagneticButton";
+import SplitText from "./SplitText";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { asset } from "@/lib/paths";
@@ -55,8 +57,10 @@ export default function Footer() {
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
               <h3 className="font-display text-3xl font-bold leading-tight text-navy-950 dark:text-white md:text-4xl">
-                Ready to begin your{" "}
-                <span className="text-gold-gradient">topper journey?</span>
+                <SplitText>Ready to begin your</SplitText>{" "}
+                <span className="text-gold-gradient">
+                  <SplitText delay={0.2}>topper journey?</SplitText>
+                </span>
               </h3>
               <p className="mt-3 text-navy-700/80 dark:text-white/60">
                 Schedule a free consultation with our admissions team and find
@@ -64,13 +68,17 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center md:justify-end">
-              <a href={`tel:${phoneClean}`} className="btn-primary justify-center">
-                Book Free Consultation
-                <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href={`mailto:${contact.email}`} className="btn-ghost justify-center">
-                Email Us
-              </a>
+              <MagneticButton>
+                <a href={`tel:${phoneClean}`} className="btn-primary justify-center">
+                  Book Free Consultation
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </MagneticButton>
+              <MagneticButton strength={0.28}>
+                <a href={`mailto:${contact.email}`} className="btn-ghost justify-center">
+                  Email Us
+                </a>
+              </MagneticButton>
             </div>
           </div>
         </motion.div>
@@ -151,16 +159,17 @@ export default function Footer() {
           {socials.length > 0 && (
             <div className="flex gap-3">
               {socials.map(({ Icon, href, label }, i) => (
-                <a
-                  key={i}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-400/25 text-navy-700 transition-all duration-300 hover:border-gold-400/60 hover:bg-gold-400/10 hover:text-gold-600 dark:border-gold-400/15 dark:text-white/70 dark:hover:border-gold-400/50 dark:hover:text-gold-300"
-                  aria-label={label}
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
+                <MagneticButton key={i} strength={0.32}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-400/25 text-navy-700 transition-all duration-300 hover:border-gold-400/60 hover:bg-gold-400/10 hover:text-gold-600 dark:border-gold-400/15 dark:text-white/70 dark:hover:border-gold-400/50 dark:hover:text-gold-300"
+                    aria-label={label}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                </MagneticButton>
               ))}
             </div>
           )}

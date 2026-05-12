@@ -1,6 +1,9 @@
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import DynamicBackground from "@/components/DynamicBackground";
+import ScrollProgress from "@/components/ScrollProgress";
+import SmoothScroll from "@/components/SmoothScroll";
+import CustomCursor from "@/components/CustomCursor";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,6 +59,9 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="font-sans overflow-x-hidden">
+        <SmoothScroll />
+        <ScrollProgress />
+        <CustomCursor />
         <DynamicBackground />
         {children}
       </body>

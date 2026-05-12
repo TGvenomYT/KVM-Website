@@ -7,9 +7,10 @@ import {
   useTransform,
   useMotionTemplate,
 } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function DynamicBackground() {
+  const canvasRef = useRef(null);
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
@@ -30,6 +31,56 @@ export default function DynamicBackground() {
   const orb2Y = useTransform(slowY, [0, 1], [80, -80]);
   const orb3X = useTransform(slowX, [0, 1], [-70, 70]);
   const orb3Y = useTransform(slowY, [0, 1], [60, -60]);
+
+  // Particle canvas — same layer as orbs, zero sync issues
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    let rafId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    const particles = Array.from({ length: 80 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.2 + 0.4,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: -(Math.random() * 0.18 + 0.04),
+      base: Math.random() * 0.55 + 0.25,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.018 + 0.006,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.phase += p.speed;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        const opacity = p.base + Math.sin(p.phase) * p.base * 0.55;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,175,55,${opacity.toFixed(3)})`;
+        ctx.fill();
+      }
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   useEffect(() => {
     let throttle = null;
@@ -76,6 +127,7 @@ export default function DynamicBackground() {
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
       style={{ zIndex: 0 }}
     >
+      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       <div className="absolute inset-0 grid-bg opacity-70 dark:opacity-40" />
 
       <motion.div

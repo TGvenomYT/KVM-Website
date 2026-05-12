@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Quote, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { getTestimonials } from "@/lib/sheets";
+import SplitText from "./SplitText";
+import MagneticButton from "./MagneticButton";
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState([]);
@@ -53,7 +55,11 @@ export default function Testimonials() {
             </span>
           </div>
           <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
-            What <span className="text-gold-gradient">parents</span> say
+            <SplitText>What</SplitText>{" "}
+            <span className="text-gold-gradient">
+              <SplitText delay={0.1}>parents</SplitText>
+            </span>{" "}
+            <SplitText delay={0.2}>say</SplitText>
           </h2>
         </motion.div>
 
@@ -70,10 +76,10 @@ export default function Testimonials() {
             <div className="relative min-h-[280px] md:min-h-[260px]">
               {loading || !t ? (
                 <div className="space-y-4">
-                  <div className="h-4 w-32 animate-pulse rounded bg-gold-400/10" />
-                  <div className="h-8 w-full animate-pulse rounded bg-gold-400/10" />
-                  <div className="h-8 w-3/4 animate-pulse rounded bg-gold-400/10" />
-                  <div className="h-8 w-2/3 animate-pulse rounded bg-gold-400/10" />
+                  <div className="h-4 w-32 skeleton rounded" />
+                  <div className="h-8 w-full skeleton rounded" />
+                  <div className="h-8 w-3/4 skeleton rounded" />
+                  <div className="h-8 w-2/3 skeleton rounded" />
                 </div>
               ) : (
                 <AnimatePresence mode="wait" custom={direction}>
@@ -138,20 +144,24 @@ export default function Testimonials() {
               </div>
 
               <div className="flex gap-3">
-                <button
-                  onClick={() => paginate(-1)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-400/30 text-gold-600 transition-all duration-300 hover:border-gold-400/70 hover:bg-gold-400/10 dark:border-gold-400/20 dark:text-gold-300 dark:hover:border-gold-400/60"
-                  aria-label="Previous"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => paginate(1)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-400/30 text-gold-600 transition-all duration-300 hover:border-gold-400/70 hover:bg-gold-400/10 dark:border-gold-400/20 dark:text-gold-300 dark:hover:border-gold-400/60"
-                  aria-label="Next"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
+                <MagneticButton strength={0.3}>
+                  <button
+                    onClick={() => paginate(-1)}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-400/30 text-gold-600 transition-all duration-300 hover:border-gold-400/70 hover:bg-gold-400/10 dark:border-gold-400/20 dark:text-gold-300 dark:hover:border-gold-400/60"
+                    aria-label="Previous"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                </MagneticButton>
+                <MagneticButton strength={0.3}>
+                  <button
+                    onClick={() => paginate(1)}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gold-400/30 text-gold-600 transition-all duration-300 hover:border-gold-400/70 hover:bg-gold-400/10 dark:border-gold-400/20 dark:text-gold-300 dark:hover:border-gold-400/60"
+                    aria-label="Next"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </MagneticButton>
               </div>
             </div>
           )}

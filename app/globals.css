@@ -27,12 +27,61 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide native cursor on mouse-capable devices */
+@media (hover: hover) and (pointer: fine) {
+  *, *::before, *::after { cursor: none !important; }
+}
+
 html,
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  scroll-behavior: smooth;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  isolation: isolate;
+}
+
+/* Film grain overlay — faint noise layer for depth */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}
+
+/* Gold shimmer skeleton loader */
+@keyframes skeleton-wave {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(212,175,55,0.04) 0%,
+    rgba(212,175,55,0.10) 38%,
+    rgba(212,175,55,0.18) 50%,
+    rgba(212,175,55,0.10) 62%,
+    rgba(212,175,55,0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.8s ease-in-out infinite;
+}
+
+/* View Transition: new theme grows from the toggle button */
+@keyframes theme-reveal {
+  from { clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%)); }
+  to   { clip-path: circle(200vmax at var(--theme-x, 50%) var(--theme-y, 50%)); }
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(root) {
+  animation: none;
 }
 
 ::selection {

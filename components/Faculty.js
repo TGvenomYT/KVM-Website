@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Linkedin, Twitter, Mail, GraduationCap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getFaculty } from "@/lib/sheets";
+import SplitText from "./SplitText";
 
 const cardVariant = {
   hidden: { opacity: 0, y: 30 },
@@ -45,8 +46,10 @@ export default function Faculty() {
             </span>
           </div>
           <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
-            Mentors who{" "}
-            <span className="text-gold-gradient">make the difference</span>
+            <SplitText>Mentors who</SplitText>{" "}
+            <span className="text-gold-gradient">
+              <SplitText delay={0.15}>make the difference</SplitText>
+            </span>
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-navy-700/80 dark:text-white/60">
             Decades of teaching wisdom meet contemporary pedagogy. Our faculty
@@ -58,9 +61,9 @@ export default function Faculty() {
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="flex flex-col items-center">
-                  <div className="h-32 w-32 animate-pulse rounded-full bg-gold-400/10 md:h-36 md:w-36" />
-                  <div className="mt-6 h-3 w-20 animate-pulse rounded bg-gold-400/10" />
-                  <div className="mt-2 h-2 w-16 animate-pulse rounded bg-gold-400/10" />
+                  <div className="h-32 w-32 skeleton rounded-full md:h-36 md:w-36" />
+                  <div className="mt-6 h-3 w-20 skeleton rounded" />
+                  <div className="mt-2 h-2 w-16 skeleton rounded" />
                 </div>
               ))
             : faculty.map((member, i) => (

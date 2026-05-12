@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
+import MagneticButton from "./MagneticButton";
 import { asset } from "@/lib/paths";
 
 const navLinks = [
@@ -18,11 +19,27 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 40);
   });
+
+  useEffect(() => {
+    const onScroll = () => {
+      const offset = 120;
+      let current = "home";
+      for (const { href } of navLinks) {
+        const el = document.getElementById(href.slice(1));
+        if (el && el.getBoundingClientRect().top <= offset) current = href.slice(1);
+      }
+      setActiveSection(current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <motion.header
@@ -59,9 +76,26 @@ export default function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="rounded-full px-4 py-2 text-sm font-medium text-navy-700/80 transition-all duration-300 hover:bg-gold-400/10 hover:text-gold-600 dark:text-white/70 dark:hover:text-gold-300"
+                className={`group relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-gold-400/10 hover:text-gold-600 dark:hover:text-gold-300 ${
+                  activeSection === link.href.slice(1)
+                    ? "text-gold-600 dark:text-gold-300"
+                    : "text-navy-700/80 dark:text-white/70"
+                }`}
               >
                 {link.label}
+                {/* active dot */}
+                <motion.span
+                  animate={{
+                    scale: activeSection === link.href.slice(1) ? 1 : 0,
+                    opacity: activeSection === link.href.slice(1) ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute -bottom-0.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-gold-500 dark:bg-gold-400"
+                />
+                {/* hover underline for non-active */}
+                {activeSection !== link.href.slice(1) && (
+                  <span className="absolute inset-x-4 bottom-[7px] h-px origin-left scale-x-0 rounded-full bg-current opacity-60 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+                )}
               </a>
             </li>
           ))}
@@ -69,9 +103,11 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <a href="#contact" className="btn-primary hidden lg:inline-flex">
-            Enroll Now
-          </a>
+          <MagneticButton>
+            <a href="#contact" className="btn-primary hidden lg:inline-flex">
+              Enroll Now
+            </a>
+          </MagneticButton>
 
           <button
             onClick={() => setOpen(!open)}

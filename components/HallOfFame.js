@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getToppers } from "@/lib/sheets";
+import TiltCard from "./TiltCard";
+import SplitText from "./SplitText";
 
 const cardVariant = {
   hidden: { opacity: 0, y: 40, scale: 0.96 },
@@ -44,7 +46,11 @@ export default function HallOfFame() {
             </span>
           </div>
           <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
-            Our <span className="text-gold-gradient">Board Exam</span> Legends
+            <SplitText>Our</SplitText>{" "}
+            <span className="text-gold-gradient">
+              <SplitText delay={0.08}>Board Exam</SplitText>
+            </span>{" "}
+            <SplitText delay={0.2}>Legends</SplitText>
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-navy-700/80 dark:text-white/60">
             Each one a story of grit, mentorship, and meticulous preparation.
@@ -57,7 +63,7 @@ export default function HallOfFame() {
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`bento-card animate-pulse bg-gold-400/5 ${
+                  className={`bento-card skeleton ${
                     i === 0 ? "row-span-2 md:col-span-2 md:row-span-2" : ""
                   } ${i === 1 || i === 4 ? "md:col-span-2" : ""}`}
                 />
@@ -65,7 +71,7 @@ export default function HallOfFame() {
             : toppers.map((topper, i) => {
                 const Icon = topper.icon;
                 return (
-                  <motion.div
+                  <TiltCard
                     key={`topper-${i}-${topper.name || ""}`}
                     custom={i}
                     variants={cardVariant}
@@ -73,6 +79,7 @@ export default function HallOfFame() {
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                     className={`bento-card group ${topper.span}`}
+                    intensity={5}
                   >
                     <div className="relative h-full w-full overflow-hidden rounded-[1.5rem]">
                       {topper.img && (
@@ -118,7 +125,7 @@ export default function HallOfFame() {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </TiltCard>
                 );
               })}
         </div>

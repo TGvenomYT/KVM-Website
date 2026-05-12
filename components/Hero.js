@@ -1,8 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Star } from "lucide-react";
 import Image from "next/image";
+import MagneticButton from "./MagneticButton";
+import SplitText from "./SplitText";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -14,6 +16,10 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const { scrollY } = useScroll();
+  const imgY = useTransform(scrollY, [0, 600], [0, 70]);
+  const textY = useTransform(scrollY, [0, 600], [0, -28]);
+
   return (
     <section
       id="home"
@@ -23,21 +29,19 @@ export default function Hero() {
       <div className="pointer-events-none absolute -right-40 bottom-0 h-[600px] w-[600px] rounded-full bg-navy-200/40 blur-[140px] dark:bg-navy-500/30" />
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 pb-24 md:px-12 lg:grid-cols-2 lg:gap-12 lg:pb-40">
-        <div className="relative z-10">
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            variants={fadeUp}
-            className="font-display text-[2.5rem] font-bold leading-[1.05] tracking-tight text-navy-950 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl"
-          >
-            Shaping{" "}
+        <motion.div style={{ y: textY }} className="relative z-10">
+          <h1 className="font-display text-[2.5rem] font-bold leading-[1.05] tracking-tight text-navy-950 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <SplitText delay={0.2}>Shaping</SplitText>{" "}
             <span className="relative inline-block">
-              <span className="text-shimmer">Future</span>
+              <span className="text-shimmer">
+                <SplitText delay={0.32}>Future</SplitText>
+              </span>
             </span>{" "}
             <br className="hidden md:block" />
-            <span className="text-gold-gradient">Toppers</span>
-          </motion.h1>
+            <span className="text-gold-gradient">
+              <SplitText delay={0.44}>Toppers</SplitText>
+            </span>
+          </h1>
 
           <motion.p
             initial="hidden"
@@ -58,13 +62,17 @@ export default function Hero() {
             variants={fadeUp}
             className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
           >
-            <a href="#courses" className="btn-primary group justify-center">
-              Explore Courses
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-            <a href="#hall-of-fame" className="btn-ghost justify-center">
-              View Toppers
-            </a>
+            <MagneticButton>
+              <a href="#courses" className="btn-primary group justify-center">
+                Explore Courses
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+            </MagneticButton>
+            <MagneticButton strength={0.28}>
+              <a href="#hall-of-fame" className="btn-ghost justify-center">
+                View Toppers
+              </a>
+            </MagneticButton>
           </motion.div>
 
           <motion.div
@@ -105,9 +113,10 @@ export default function Hero() {
               <p className="text-xs text-navy-600/70 dark:text-white/50">From 200+ parent reviews</p>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
         <motion.div
+          style={{ y: imgY }}
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}

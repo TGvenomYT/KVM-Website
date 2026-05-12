@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, BookOpen } from "lucide-react";
 import CourseModal from "./CourseModal";
 import { getCourses } from "@/lib/sheets";
+import TiltCard from "./TiltCard";
+import SpotlightCard from "./SpotlightCard";
+import SplitText from "./SplitText";
+import MagneticButton from "./MagneticButton";
 
 const cardVariant = {
   hidden: { opacity: 0, y: 40 },
@@ -46,18 +50,22 @@ export default function Courses() {
                 </span>
               </div>
               <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
-                Programmes built for{" "}
-                <span className="text-gold-gradient">every learner</span>
+                <SplitText>Programmes built for</SplitText>{" "}
+                <span className="text-gold-gradient">
+                  <SplitText delay={0.18}>every learner</SplitText>
+                </span>
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-navy-700/80 dark:text-white/60">
                 From Class 8 to 12 — for both CBSE and State Board — every course
                 is curated by subject specialists with proven outcomes.
               </p>
             </div>
-            <a href="#contact" className="btn-ghost shrink-0">
-              Talk to a Counsellor
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
+            <MagneticButton strength={0.28}>
+              <a href="#contact" className="btn-ghost shrink-0">
+                Talk to a Counsellor
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </MagneticButton>
           </motion.div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -65,21 +73,23 @@ export default function Courses() {
               ? Array.from({ length: 6 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-[340px] animate-pulse rounded-3xl border border-gold-400/15 bg-white/40 dark:border-gold-400/10 dark:bg-navy-800/30"
+                    className="h-[340px] skeleton rounded-3xl border border-gold-400/15 dark:border-gold-400/10"
                   />
                 ))
               : courses.map((course, i) => {
                   const Icon = course.icon;
                   return (
-                    <motion.article
+                    <TiltCard
                       key={`course-${i}-${course.title || ""}`}
                       custom={i}
                       variants={cardVariant}
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, margin: "-50px" }}
-                      className="group relative overflow-hidden rounded-3xl border border-gold-400/25 bg-white/55 p-7 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:scale-[1.01] hover:border-gold-400/65 hover:shadow-[0_25px_60px_-20px_rgba(184,148,31,0.35)] dark:border-gold-400/15 dark:bg-navy-800/40 dark:hover:border-gold-400/55 dark:hover:shadow-[0_25px_60px_-20px_rgba(212,175,55,0.3)]"
+                      className="group overflow-hidden rounded-3xl border border-gold-400/25 bg-white/55 backdrop-blur-xl transition-all duration-500 hover:border-gold-400/65 hover:shadow-[0_25px_60px_-20px_rgba(184,148,31,0.35)] dark:border-gold-400/15 dark:bg-navy-800/40 dark:hover:border-gold-400/55 dark:hover:shadow-[0_25px_60px_-20px_rgba(212,175,55,0.3)]"
+                      intensity={6}
                     >
+                      <SpotlightCard className="h-full w-full p-7">
                       <div className="relative">
                         <div className="mb-6 flex items-start justify-between">
                           <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold-400/30 bg-gradient-to-br from-gold-400/20 to-transparent transition-all duration-500 group-hover:border-gold-400/60 dark:border-gold-400/20 dark:from-gold-400/15 dark:group-hover:border-gold-400/50">
@@ -122,7 +132,8 @@ export default function Courses() {
                           <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </button>
                       </div>
-                    </motion.article>
+                      </SpotlightCard>
+                    </TiltCard>
                   );
                 })}
           </div>

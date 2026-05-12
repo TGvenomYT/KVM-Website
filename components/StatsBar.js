@@ -50,9 +50,9 @@ export default function StatsBar() {
             {loading
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="px-6 py-10 md:px-8 md:py-14">
-                    <div className="mb-5 h-12 w-12 animate-pulse rounded-xl bg-gold-400/10" />
-                    <div className="h-12 w-24 animate-pulse rounded bg-gold-400/10" />
-                    <div className="mt-3 h-3 w-32 animate-pulse rounded bg-gold-400/10" />
+                    <div className="mb-5 h-12 w-12 skeleton rounded-xl" />
+                    <div className="h-12 w-24 skeleton rounded" />
+                    <div className="mt-3 h-3 w-32 skeleton rounded" />
                   </div>
                 ))
               : stats.map((stat, i) => {

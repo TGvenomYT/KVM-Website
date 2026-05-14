@@ -20,11 +20,14 @@ export default function CourseModal({ course, onClose }) {
     if (!course) return;
     const onKey = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
     };
   }, [course, onClose]);
 
@@ -36,7 +39,7 @@ export default function CourseModal({ course, onClose }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] overflow-y-auto bg-navy-950/70 backdrop-blur-md"
+          className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-navy-950/70 backdrop-blur-md"
           onClick={onClose}
         >
           <div className="flex min-h-full items-start justify-center px-4 py-8 md:items-center md:py-12">

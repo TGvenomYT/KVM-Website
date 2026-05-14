@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { X, Users, Clock, Sparkles, ArrowRight } from "lucide-react";
 
@@ -16,20 +16,35 @@ const ITEM = {
 };
 
 export default function CourseModal({ course, onClose }) {
+  const overlayRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     if (!course) return;
-    const onKey = (e) => e.key === "Escape" && onClose();
+    const onKey = (e) => e.key === "Escape" && onCloseRef.current();
     document.addEventListener("keydown", onKey);
-    const prevBody = document.body.style.overflow;
-    const prevHtml = document.documentElement.style.overflow;
+
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
     document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+
+    if (window.__lenis) window.__lenis.stop();
+
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevBody;
-      document.documentElement.style.overflow = prevHtml;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, scrollY);
+      if (window.__lenis) window.__lenis.start();
     };
-  }, [course, onClose]);
+  }, [course]);
 
   return (
     <AnimatePresence>
@@ -39,17 +54,23 @@ export default function CourseModal({ course, onClose }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-navy-950/70 backdrop-blur-md"
+          className="fixed inset-0 z-[100] bg-navy-950/70 backdrop-blur-md"
           onClick={onClose}
         >
-          <div className="flex min-h-full items-start justify-center px-4 py-8 md:items-center md:py-12">
+          <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[101] flex items-start justify-center overflow-y-auto overscroll-contain px-4 py-8 md:py-12"
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onClick={onClose}
+          >
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.96 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl overflow-hidden rounded-[2rem] border border-gold-400/25 bg-cream-50 shadow-2xl shadow-navy-950/20 dark:border-gold-400/15 dark:bg-navy-900"
+            className="relative my-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-gold-400/25 bg-cream-50 shadow-2xl shadow-navy-950/20 dark:border-gold-400/15 dark:bg-navy-900"
           >
             <CourseHero course={course} onClose={onClose} />
             <CourseFaculty staff={course.staff} />

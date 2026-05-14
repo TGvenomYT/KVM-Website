@@ -12,6 +12,8 @@ export default function SmoothScroll() {
       touchMultiplier: 1.8,
     });
 
+    window.__lenis = lenis;
+
     // Intercept all anchor clicks so Lenis handles them smoothly
     const handleClick = (e) => {
       const anchor = e.target.closest('a[href^="#"]');

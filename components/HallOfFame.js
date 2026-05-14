@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Trophy } from "lucide-react";
+import { Trophy, GraduationCap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getToppers } from "@/lib/sheets";
 import TiltCard from "./TiltCard";
@@ -21,13 +21,25 @@ const cardVariant = {
 export default function HallOfFame() {
   const [toppers, setToppers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeClass, setActiveClass] = useState(null);
 
   useEffect(() => {
     getToppers()
-      .then(setToppers)
+      .then((data) => {
+        setToppers(data);
+        const firstClass = data.find((t) => t.class)?.class || null;
+        setActiveClass(firstClass);
+      })
       .catch((e) => console.error("Toppers fetch failed:", e))
       .finally(() => setLoading(false));
   }, []);
+
+  const classes = Array.from(
+    new Set(toppers.map((t) => t.class).filter(Boolean))
+  );
+  const filteredToppers = activeClass
+    ? toppers.filter((t) => t.class === activeClass)
+    : toppers;
 
   return (
     <section id="hall-of-fame" className="relative section-pad">
@@ -48,17 +60,69 @@ export default function HallOfFame() {
           <h2 className="font-display text-4xl font-bold leading-tight tracking-tight text-navy-950 dark:text-white md:text-5xl lg:text-6xl">
             <SplitText>Our</SplitText>{" "}
             <span className="text-gold-gradient">
-              <SplitText delay={0.08}>Board Exam</SplitText>
+              <SplitText delay={0.08}>Distinguished</SplitText>
             </span>{" "}
-            <SplitText delay={0.2}>Legends</SplitText>
+            <SplitText delay={0.2}>Achievers</SplitText>
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-navy-700/80 dark:text-white/60">
-            Each one a story of grit, mentorship, and meticulous preparation.
-            Meet the students who turned their ambition into accolades.
+            A celebration of disciplined effort, expert mentorship, and rigorous
+            preparation — students whose results reflect the standard KVMTCC
+            stands for.
           </p>
         </motion.div>
 
-        <div className="grid auto-rows-[minmax(220px,_auto)] grid-cols-1 gap-5 md:auto-rows-[minmax(160px,_auto)] md:grid-cols-4">
+        {!loading && classes.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-12 flex justify-start"
+          >
+            <div className="relative inline-flex items-center gap-1 rounded-full border border-navy-200/60 bg-white/50 p-1.5 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.15)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)]">
+              {classes.map((cls) => {
+                const isActive = cls === activeClass;
+                return (
+                  <button
+                    key={cls}
+                    onClick={() => setActiveClass(cls)}
+                    className="relative z-10 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold tracking-wide transition-colors duration-300"
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="hof-tab-pill"
+                        className="absolute inset-0 rounded-full bg-gold-gradient shadow-lg shadow-gold-400/40"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <GraduationCap
+                      className={`relative h-4 w-4 transition-colors duration-300 ${
+                        isActive
+                          ? "text-navy-950"
+                          : "text-navy-500 dark:text-white/50"
+                      }`}
+                      strokeWidth={2.2}
+                    />
+                    <span
+                      className={`relative transition-colors duration-300 ${
+                        isActive
+                          ? "text-navy-950"
+                          : "text-navy-700 hover:text-gold-600 dark:text-white/70 dark:hover:text-gold-300"
+                      }`}
+                    >
+                      {cls}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        <div
+          key={activeClass || "all"}
+          className="grid auto-rows-[minmax(220px,_auto)] grid-cols-1 gap-5 md:auto-rows-[minmax(160px,_auto)] md:grid-cols-4"
+        >
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
@@ -68,7 +132,7 @@ export default function HallOfFame() {
                   } ${i === 1 || i === 4 ? "md:col-span-2" : ""}`}
                 />
               ))
-            : toppers.map((topper, i) => {
+            : filteredToppers.map((topper, i) => {
                 const Icon = topper.icon;
                 return (
                   <TiltCard

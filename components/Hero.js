@@ -39,7 +39,7 @@ export default function Hero() {
             </span>{" "}
             <br className="hidden md:block" />
             <span className="text-gold-gradient">
-              <SplitText delay={0.44}>Toppers</SplitText>
+              <SplitText delay={0.44}>Minds</SplitText>
             </span>
           </h1>
 

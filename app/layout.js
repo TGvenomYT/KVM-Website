@@ -18,7 +18,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  title: "KVMTCC Tuition Centre — Shaping Future Toppers",
+  title: "KVMTCC Tuition Centre — Shaping Future Minds",
   description:
     "Premium tuition centre for CBSE & State Board students from Class 8 to 12. 10+ years of excellence. 98% success rate. Where future toppers are made.",
   keywords: [

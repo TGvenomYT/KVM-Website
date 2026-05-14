@@ -11,7 +11,7 @@ export default function SplitText({ children, delay = 0, className = "" }) {
   return (
     <span ref={ref} className={`inline ${className}`} aria-label={String(children)}>
       {words.map((word, i) => (
-        <span key={i} className="inline-block overflow-hidden leading-[1.15]">
+        <span key={i} className="inline-block leading-[1.15]">
           <motion.span
             className="inline-block"
             initial={{ y: "105%", opacity: 0 }}

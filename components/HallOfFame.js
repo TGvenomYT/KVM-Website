@@ -142,7 +142,7 @@ export default function HallOfFame() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
-                    className={`bento-card group ${topper.span}`}
+                    className={`bento-card group ${topper.span} ${topper.featured ? "bento-card-featured" : ""}`}
                     intensity={5}
                   >
                     <div className="relative h-full w-full overflow-hidden rounded-[1.5rem]">
